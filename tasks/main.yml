@@ -62,7 +62,6 @@
     owner: '{{ slack_remote_user }}'
     group: '{{ slack_remote_user }}'
     mode: 0755
-  when: slack_state == 'present'
 
 - name: "Transfer our package to our target system"
   copy: 
@@ -73,37 +72,16 @@
 
 ## Install our resource (if the package was not previously installed)
 
-- name: "ensure that {{ slack_app_name }} version {{ slack_ver }} is installed"
+- name: "ensure that {{ slack_package_name }} version {{ slack_ver }} is installed"
   become: True
   apt:
     deb: '{{ slack_taget_node_package_path }}'
     state: 'present' # deb only supports state 'present'
   when: slack_state == 'present'
 
-#    deb: '{{ slack_remote_users_home }}/{{ slack_package_filename }}'
-
-# purge : yes, no force purging of configuration files if the module state is set to absent.
-# state : latest, absent, present, build-dep
-
-
-# "Failure downloading file://home/users/csteel/src/Ubuntu/16.04/slack/2.6.2/slack-desktop-2.6.2-amd64.deb, 'NoneType' object has no attribute 'read'"}
-#- name: Install my_package
-#  become: True
-#  apt:
-#    deb: 'file:/{{ slack_controller_package_path }}'
-
-
-## Uninstall when slack_state == absent
-
-#- name: "ensure that {{ slack_app_name }} version {{ slack_ver }} is uninstalled"
-#  become: True
-#  command: apt-get remove -y {{ slack_app_name }}
-#  ignore_errors: yes
-#  when: slack_state == 'absent'
-
-- name: "ensure that {{ slack_app_name }} version {{ slack_ver }} is uninstalled"
+- name: "ensure that {{ slack_package_name }} version {{ slack_ver }} is uninstalled"
   become: True
   apt:
-    name: '{{ slack_app_name }}'
+    name: '{{ slack_package_name }}'
     state: absent
   when: slack_state == 'absent'

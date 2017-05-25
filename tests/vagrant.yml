@@ -20,14 +20,15 @@
 
 # probably set in this or a dependent role
 
-    - slack_state                   : 'absent' # 'present' # 'absent'
-    - slack_installation_type       : 'local' # 'local', 'url' # via url link or a local package only.
-    - slack_app_name                : 'slack-desktop'
-    - slack_ver                     : '2.0.3' #'2.6.2' # 2.0.3
+    - slack_state                   : 'present' # 'present' # 'absent'
+#    - slack_installation_type       : 'local' # 'url'
+    - slack_app_name                : 'slack'
+    - slack_package_name            : 'slack-desktop'
+    - slack_ver                     : '2.6.2' # 2.0.3
     - slack_arch                    : 'amd64'
     - slack_package_type            : 'deb'
     # example below builds "slack-desktop-2.6.2-amd64.deb"
-    - slack_package_filename        : '{{ slack_app_name }}-{{ slack_ver }}-{{ slack_arch }}.{{ slack_package_type }}'
+    - slack_package_filename        : '{{ slack_package_name }}-{{ slack_ver }}-{{ slack_arch }}.{{ slack_package_type }}'
 
     - slack_controller_package_path : '{{ fact_controller_home }}/src/Ubuntu/16.04/slack/{{ slack_ver }}/{{ slack_package_filename }}'
 

@@ -42,6 +42,7 @@ Role Variables
 ### roles/slack/defaults/main.yml
 
 ```yaml
+---
 # file: roles/slack/defaults/main.yml
 #
 
@@ -60,21 +61,22 @@ slack_remote_users_home : '/home/users/{{ slack_remote_user }}'
 
 # probably set in this or a dependent role
 
-slack_state                   : 'present'
-slack_installation_type       : 'local' # 'local', 'url' # is url local or remote.
-slack_app_name                : 'slack-desktop'
-slack_ver                     : '2.6.2'
-slack_arch                    : 'amd64'
-slack_package_type            : 'deb'
-# example below builds "slack-desktop-2.6.2-amd64.deb"
-slack_package_filename        : '{{ slack_app_name }}-{{ slack_ver }}-{{ slack_arch }}.{{ slack_package_type }}'
+slack_state             : 'absent' # 'present' # 'absent'
+#slack_installation_type : 'local' # 'url'
+slack_app_name          : 'slack'
+slack_package_name      : 'slack-desktop'
+slack_ver               : '2.0.3' #'2.6.2' # 2.0.3
+slack_arch              : 'amd64'
+slack_package_type      : 'deb'
 
-slack_distribution_path: ''
+# calculated vars
+
+# example below builds "slack-desktop-2.6.2-amd64.deb"
+slack_package_filename  : '{{ slack_package_name }}-{{ slack_ver }}-{{ slack_arch }}.{{ slack_package_type }}'
 slack_controller_package_path : '{{ fact_controller_home }}/src/Ubuntu/16.04/slack/{{ slack_ver }}/{{ slack_package_filename }}'
 
 slack_taget_node_package_dir  : '{{ slack_remote_users_home }}/src/Ubuntu/16.04/slack/{{ slack_ver }}'
 slack_taget_node_package_path : '{{ slack_taget_node_package_dir }}/{{ slack_package_filename }}'
-
 ```
 
 ### roles/slack/tests/vagrant.yml
@@ -103,13 +105,14 @@ slack_taget_node_package_path : '{{ slack_taget_node_package_dir }}/{{ slack_pac
 # probably set in this or a dependent role
 
     - slack_state                   : 'absent' # 'present' # 'absent'
-    - slack_installation_type       : 'local' # 'local', 'url' # via url link or a local package only.
-    - slack_app_name                : 'slack-desktop'
+#    - slack_installation_type       : 'local' # 'url'
+    - slack_app_name                : 'slack'
+    - slack_package_name            : 'slack-desktop'
     - slack_ver                     : '2.0.3' #'2.6.2' # 2.0.3
     - slack_arch                    : 'amd64'
     - slack_package_type            : 'deb'
     # example below builds "slack-desktop-2.6.2-amd64.deb"
-    - slack_package_filename        : '{{ slack_app_name }}-{{ slack_ver }}-{{ slack_arch }}.{{ slack_package_type }}'
+    - slack_package_filename        : '{{ slack_package_name }}-{{ slack_ver }}-{{ slack_arch }}.{{ slack_package_type }}'
 
     - slack_controller_package_path : '{{ fact_controller_home }}/src/Ubuntu/16.04/slack/{{ slack_ver }}/{{ slack_package_filename }}'
 
@@ -173,12 +176,16 @@ slack_local_directories_description:
 ```
 
 
-Example Role Playbook
+
+role playbook example
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+### project_name/slack.yml
 
 ```yaml
+---
+# file: project_name/slack.yml
+
 - hosts: slack
   become: false
   gather_facts: true
@@ -191,18 +198,96 @@ Including an example of how to use your role (for instance, with variables passe
     - debug: var=fact_controller_home
 
   roles:
-  
-    - { role: cjsteel.ansible-role-slack, slack_state: 'absent', slack_version: '2.0.3' }
-    - { role: cjsteel.ansible-role-slack, slack_state: 'present', slack_version: '2.6.2' }
+
+    - { role: slack, slack_state: 'absent', slack_ver: '2.0.3' }
+    - { role: slack, slack_state: 'present', slack_ver: '2.6.2' }
+
+#    - { role: cjsteel.ansible-role-slack, slack_state: 'absent', slack_ver: '2.0.3' }
+#    - { role: cjsteel.ansible-role-slack, slack_state: 'present', slack_ver: '2.6.2' }
 ```
 
 
 
+## main playbook example
+
+### project_name/systems.yml
+
+```yaml
+---
+- hosts: all
+  become: false
+
+- include: deployment_user.yml
+
+- include: shorewall.yml
+
+- include: ldap.yml
+
+- include: workstation.yml
+
+- include: slack.yml
+...
+```
+
+
+
+## Ansible command examples
+
+### without sudo
+
+```shell
+ansible-playbook -i inventory/dev systems.yml --limit ace-ws-77
+```
+
+### with sudo
+
+```shell
+ansible-playbook -i inventory/dev systems.yml --limit ace-ws-77 --ask-become-pass
+```
+
+
+
+## Role Testing
+
+### Locally using vagrant
+
+```shell
+mkdir .vagrant/synced
+vagrant up
+vagrant ssh -- -X
+# slack-desktop # ver 2.0.3 ?
+slack # ver 2.6.2
+exit
+vagrant destroy
+```
+
+### Error via X tunnel
+
+"**slack: error while loading shared libraries: libasound.so.2: cannot open shared object file: No such file or directory**"
+
+- libasound.so.2 is a part of "alsa-lib".
+- Package "alsa-utils" depends on "alsa-lib", and installs with them, perhaps alsa-lib should be added to dependencies list?
+
+Resolved with:
+
+```shell
+sudo apt install alsa-utils
+```
+
+Give new error but starts slack
+
+```shell
+Gtk-Message: Failed to load module "canberra-gtk-module"
+Creating Slack Application
+```
+
+#### error reference
+
+* [https://aur-dev.archlinux.org/packages/slack-desktop/?](https://aur-dev.archlinux.org/packages/slack-desktop/?)
+
 ## License
 
-Various, MIT
-
-
+MIT
 
 ## Author Information
 
@@ -217,8 +302,6 @@ E-mail: christopherDOTsteel@mcgill.ca
 ## Open Science
 
 The Montreal Neurological Institute has adopted the principles of Open Science. We are inspired by the likes of the Allen Institute for Brain Science, the National Institutes of Health's Human Connectome project, and the Human Genome project. For additional information please see [open science at the neuro]( https://www.mcgill.ca/neuro/open-science-0).
-
-
 
 
 
