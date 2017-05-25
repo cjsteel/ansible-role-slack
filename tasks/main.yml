@@ -1,2 +1,90 @@
 ---
-# tasks file for ansible-role-slack
+# tasks file: ansible-role-slack/defaults/main.yml
+
+## Do we have the resource(s) required on our controller?
+
+- name: "check for resource on controller"
+  connection: local
+  stat:
+    path: '{{ slack_controller_package_path }}'
+  register: slack_controller_package_stat
+
+- name: "debug value of slack_controller_package_path"
+  debug: var=slack_controller_package_path
+
+- name: "debug value of slack_controller_package_stat"
+  debug: var=slack_controller_package_stat
+
+## If not get the required resource(s) to our controller
+
+- name: "debug stat values to be used in other roles to trigger downloading and populating of resource directory"
+  debug:
+    var=slack_controller_package_stat.stat.exists,slack_controller_package_stat.stat.checksum
+  when: slack_controller_package_stat.stat.exists == true
+
+#- name: Download my_package
+#  connection: local
+#  get_url: 
+#    url="{{ my_package_url }}"
+#    dest="/home/{{ ansible_env.USER }}/Downloads/{{ my_package_name }}.deb"
+#  when: slack_controller_package_stat.stat.exists == false
+
+## ensure for the required resources on our target system(s)
+
+- name: "Do we have the resource on our target system(s)"
+  stat:
+    path: '{{ slack_taget_node_package_path }}'
+  register: slack_target_package_stat
+
+- name: "debug stat values to be used in other roles to trigger downloading and populating of resource directory"
+  debug:
+    var=slack_target_package_stat.stat.exists,slack_target_package_stat.stat.checksum
+  when: slack_target_package_stat.stat.exists != true
+
+## Transfer the package from our controller to our target system(s) when it is not on the target.
+
+- name: "debug stat value for {{ slack_controller_package_path }}"
+  debug:
+    var=slack_controller_package_path
+
+- name: "debug stat value for slack_remote_users_home"
+  debug:
+    var=slack_remote_users_home
+
+# ensure for target directory
+
+- file:
+    path: '{{ slack_taget_node_package_dir }}'
+    state: directory
+    owner: '{{ slack_remote_user }}'
+    group: '{{ slack_remote_user }}'
+    mode: 0755
+
+- name: "Transfer our package to our target system"
+  copy: 
+    src: '{{ slack_controller_package_path }}'
+    dest: '{{ slack_taget_node_package_path }}'
+#    dest: '{{ slack_remote_users_home }}/{{ slack_package_filename }}'
+  when: slack_target_package_stat.stat.exists != true
+
+## Install our resource (if the package was not previously installed)
+
+- name: Install my_package
+  become: True
+  apt:
+    deb: '{{ slack_taget_node_package_path }}'
+    state: 'present' # deb only supports state 'present'
+#    deb: '{{ slack_remote_users_home }}/{{ slack_package_filename }}'
+
+# purge : yes, no force purging of configuration files if the module state is set to absent.
+# state : latest, absent, present, build-dep
+
+
+# "Failure downloading file://home/users/csteel/src/Ubuntu/16.04/slack/2.6.2/slack-desktop-2.6.2-amd64.deb, 'NoneType' object has no attribute 'read'"}
+#- name: Install my_package
+#  become: True
+#  apt:
+#    deb: 'file:/{{ slack_controller_package_path }}'
+
+
+## 

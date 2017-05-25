@@ -14,11 +14,9 @@
 
   vars:
 
-    - slack_remote_user : 'ubuntu'
-    - slack_remote_users_home : '/home/{{ slack_remote_user }}'
-
-# probably set in playbook and/or group_vars
-    - slack_controller_home:              : '{{ fact_controler_home }}'
+    - slack_controller_home   : '{{ fact_controler_home }}'
+    - slack_remote_user       : 'ubuntu'
+    - slack_remote_users_home : '/home/ubuntu'
 
 # probably set in this or a dependent role
 
@@ -28,14 +26,13 @@
     - slack_ver                     : '2.6.2'
     - slack_arch                    : 'amd64'
     - slack_package_type            : 'deb'
-    - slack_package_filename	      : '{{ slack_app_name }}-\
-                                 {{ slack_ver }}-{{ slack_arch }}.\
-                                 {{ slack_package_type }}' # example builds "slack-desktop-2.6.2-amd64.deb"
-    - slack_controller_package_url  : 'file://{{ fact_controller_home }}/src/Ubuntu/16.04/slack/{{ slack_ver }}/{{ slack_package_filename }}'
-    - slack_taget_node_package_path : 'src/Ubuntu/16.04/slack/{{ slack_ver }}/{{ slack_package_filename }}
+    # example below builds "slack-desktop-2.6.2-amd64.deb"
+    - slack_package_filename        : '{{ slack_app_name }}-{{ slack_ver }}-{{ slack_arch }}.{{ slack_package_type }}'
+
+    - slack_controller_package_path : '{{ fact_controller_home }}/src/Ubuntu/16.04/slack/{{ slack_ver }}/{{ slack_package_filename }}'
+
+    - slack_taget_node_package_dir  : '{{ slack_remote_users_home }}/src/Ubuntu/16.04/slack/{{ slack_ver }}'
+    - slack_taget_node_package_path : '{{ slack_taget_node_package_dir }}/{{ slack_package_filename }}'
 
   roles:
     - ../../
-
-  
-
