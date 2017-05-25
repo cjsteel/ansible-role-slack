@@ -1,0 +1,41 @@
+---
+# file: roles/{{ short_role_name }}/tests/vagrant.yml
+
+- hosts: all
+  remote_user: ubuntu
+  become: false # or local directory creation will fail
+  pre_tasks:
+
+    - set_fact: fact_controller_user="{{ lookup('env','USER') }}"
+    - debug: var=fact_controller_user
+
+    - set_fact: fact_controller_home="{{ lookup('env','HOME') }}"
+    - debug: var=fact_controller_home
+
+  vars:
+
+    - slack_remote_user : 'ubuntu'
+    - slack_remote_users_home : '/home/{{ slack_remote_user }}'
+
+# probably set in playbook and/or group_vars
+    - slack_controller_home:              : '{{ fact_controler_home }}'
+
+# probably set in this or a dependent role
+
+    - slack_state                   : 'present'
+    - slack_installation_type       : 'local' # 'local', 'url' # via url link or a local package only.
+    - slack_app_name                : 'slack-desktop'
+    - slack_ver                     : '2.6.2'
+    - slack_arch                    : 'amd64'
+    - slack_package_type            : 'deb'
+    - slack_package_filename	      : '{{ slack_app_name }}-\
+                                 {{ slack_ver }}-{{ slack_arch }}.\
+                                 {{ slack_package_type }}' # example builds "slack-desktop-2.6.2-amd64.deb"
+    - slack_controller_package_url  : 'file://{{ fact_controller_home }}/src/Ubuntu/16.04/slack/{{ slack_ver }}/{{ slack_package_filename }}'
+    - slack_taget_node_package_path : 'src/Ubuntu/16.04/slack/{{ slack_ver }}/{{ slack_package_filename }}
+
+  roles:
+    - ../../
+
+  
+
