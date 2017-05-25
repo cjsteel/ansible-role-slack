@@ -3,6 +3,8 @@
 
 ## Do we have the resource(s) required on our controller?
 
+- include: debug_distribution_variables.yml
+
 - name: "check for resource on controller"
   connection: local
   stat:
@@ -53,12 +55,14 @@
 
 # ensure for target directory
 
-- file:
+- name: "ensure for resource directory on target node(s)"
+  file:
     path: '{{ slack_taget_node_package_dir }}'
     state: directory
     owner: '{{ slack_remote_user }}'
     group: '{{ slack_remote_user }}'
     mode: 0755
+  when: slack_state == 'present'
 
 - name: "Transfer our package to our target system"
   copy: 
@@ -69,11 +73,13 @@
 
 ## Install our resource (if the package was not previously installed)
 
-- name: Install my_package
+- name: "ensure that {{ slack_app_name }} version {{ slack_ver }} is installed"
   become: True
   apt:
     deb: '{{ slack_taget_node_package_path }}'
     state: 'present' # deb only supports state 'present'
+  when: slack_state == 'present'
+
 #    deb: '{{ slack_remote_users_home }}/{{ slack_package_filename }}'
 
 # purge : yes, no force purging of configuration files if the module state is set to absent.
@@ -87,4 +93,17 @@
 #    deb: 'file:/{{ slack_controller_package_path }}'
 
 
-## 
+## Uninstall when slack_state == absent
+
+#- name: "ensure that {{ slack_app_name }} version {{ slack_ver }} is uninstalled"
+#  become: True
+#  command: apt-get remove -y {{ slack_app_name }}
+#  ignore_errors: yes
+#  when: slack_state == 'absent'
+
+- name: "ensure that {{ slack_app_name }} version {{ slack_ver }} is uninstalled"
+  become: True
+  apt:
+    name: '{{ slack_app_name }}'
+    state: absent
+  when: slack_state == 'absent'
