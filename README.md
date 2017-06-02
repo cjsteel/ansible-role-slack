@@ -31,7 +31,6 @@ Requirements
 Options
 -------
 
-
 Issues
 ------
 
@@ -123,7 +122,32 @@ slack_taget_node_package_path : '{{ slack_taget_node_package_dir }}/{{ slack_pac
     - ../../
 ```
 
+### group_vars/all/project_defaults.yml
 
+```shell
+---
+# file: group_vars/all/project_defaults.yml
+
+## Controller User Variables
+
+project_controller_user_name: 'controller_user_name_goes_here'
+project_controller_user_home: '/home/{{ project_controller_user_name }}'
+
+
+## Deploymebnt User Variables
+
+project_deployment_user_name: 'deployment_user_name_goes_here'
+project_deployment_user_home: '/home/{{ project_deployment_user_name }}'
+```
+
+quick install
+
+```shell
+cp files/group_vars/all/project_defaults.yml ../../group_vars/all/.
+nano ../../group_vars/all/project_defaults.yml
+```
+
+change the user name values as required.
 
 NOT IN USE AT THIS TIME - Dependencies
 ------------
