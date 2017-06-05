@@ -1,5 +1,5 @@
 ---
-# file: group_vars/all/project_defaults
+# file: group_vars/all/project_defaults.yml
 
 ## Controller User Variables
 
