@@ -40,9 +40,9 @@
     # example below builds "slack-desktop-2.6.2-amd64.deb"
     - slack_package_filename        : '{{ slack_package_name }}-{{ slack_ver }}-{{ slack_arch }}.{{ slack_package_type }}'
 
-    - slack_controller_package_path : '{{ fact_controller_home }}/src/Ubuntu/16.04/slack/{{ slack_ver }}/{{ slack_package_filename }}'
+    - slack_controller_package_path : '{{ fact_controller_home }}/src/sw/Ubuntu/16.04/slack/{{ slack_ver }}/{{ slack_package_filename }}'
 
-    - slack_taget_node_package_dir  : '{{ slack_remote_users_home }}/src/Ubuntu/16.04/slack/{{ slack_ver }}'
+    - slack_taget_node_package_dir  : '{{ slack_remote_users_home }}/src/sw/Ubuntu/16.04/slack/{{ slack_ver }}'
     - slack_taget_node_package_path : '{{ slack_taget_node_package_dir }}/{{ slack_package_filename }}'
 
   roles:
