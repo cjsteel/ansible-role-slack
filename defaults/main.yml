@@ -12,7 +12,7 @@
 
 slack_controller_home   : '{{ fact_controler_home }}'
 slack_remote_user       : '{{ project_deployment_user_name }}'
-slack_remote_users_home : '/home/{{ slack_remote_user }}'
+slack_remote_users_home : '{{ project_deployment_user_home }}'
 
 # probably set in this or a dependent role
 
@@ -20,7 +20,7 @@ slack_state             : 'absent' # 'present' # 'absent'
 #slack_installation_type : 'local' # 'url'
 slack_app_name          : 'slack'
 slack_package_name      : 'slack-desktop'
-slack_ver               : '2.0.3' #'2.6.2' # 2.0.3
+slack_ver               : '2.8.2' #'2.6.2' # 2.0.3 # var overridden in slack.yml playbook
 slack_arch              : 'amd64'
 slack_package_type      : 'deb'
 
