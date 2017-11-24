@@ -55,9 +55,13 @@
 
 # ensure for target directory
 
+- name: "debug value of slack_remote_user"
+  debug: var=slack_remote_user
+
+
 - name: "ensure for resource directory on target node(s)"
   file:
-    path: '{{ slack_taget_node_package_dir }}'
+    path: '{{ slack_target_node_package_dir }}'
     state: directory
     owner: '{{ slack_remote_user }}'
     group: '{{ slack_remote_user }}'

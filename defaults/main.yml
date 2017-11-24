@@ -10,7 +10,8 @@
 #
 # project_deployment_user_name: 'deployment_user_name'
 
-slack_controller_home   : '{{ fact_controler_home }}'
+slack_controller_user   : '{{ project_controller_user_name }}'
+slack_controller_home   : '{{ project_controller_home_name }}'
 slack_remote_user       : '{{ project_deployment_user_name }}'
 slack_remote_users_home : '{{ project_deployment_user_home }}'
 
