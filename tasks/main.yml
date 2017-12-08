@@ -60,8 +60,9 @@
 
 
 - name: "ensure for resource directory on target node(s)"
+  become: True
   file:
-    path: '{{ slack_target_node_package_dir }}'
+    path: '{{ slack_taget_node_package_dir }}'
     state: directory
     owner: '{{ slack_remote_user }}'
     group: '{{ slack_remote_user }}'
