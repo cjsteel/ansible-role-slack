@@ -31,5 +31,5 @@ slack_package_type      : 'deb'
 slack_package_filename  : '{{ slack_package_name }}-{{ slack_ver }}-{{ slack_arch }}.{{ slack_package_type }}'
 slack_controller_package_path : '{{ fact_controller_home }}/sw/ubuntu/16.04/slack/{{ slack_ver }}/{{ slack_package_filename }}'
 
-slack_taget_node_package_dir  : '{{ slack_remote_users_home }}/sw/Ubuntu/16.04/slack/{{ slack_ver }}'
+slack_taget_node_package_dir  : '{{ slack_remote_users_home }}/sw/ubuntu/16.04/slack/{{ slack_ver }}'
 slack_taget_node_package_path : '{{ slack_taget_node_package_dir }}/{{ slack_package_filename }}'
